@@ -1,3 +1,4 @@
+
 <html>
 
     <script src="https://www.gstatic.com/firebasejs/5.7.3/firebase.js"></script>
@@ -119,6 +120,15 @@
           background-color:white; /* Add a background on hover */
           color: deepskyblue;
         }
+        
+        #myComments {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+        #newcomment:hover {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
             /* Add a black background color to the top navigation */
         .topnav {
           background-color: deepskyblue;
@@ -168,6 +178,10 @@
             background-color: deepskyblue;
             font-family: Arial, Helvetica, sans-serif;
             
+        }
+        .modal-footer-comments{
+            background-color: deepskyblue;
+            color: white;
         }
 
     
@@ -375,7 +389,7 @@
         </head>
         <div class="hero-image">
             <div class="hero-text">
-                <h1 style="font-size:60px">Twitter</h1>
+                <h1 style="font-size:60px">Tweeter</h1>
             </div>
         </div> 
         <!-- Add icon library -->
@@ -429,9 +443,42 @@
         <button onclick="topFunction()" id="myBtn" class = "btn btn-info btn-lg"title="Go to top">Top</button>
     <center><div id="mytweets"></div></center>
         
+        <br>
+        <div id = "comments">
+            <div class="container">
+          <!-- Trigger the modal with a button -->
+          <center><button type="button" id="newcomment" class="btn btn-info btn-lg " data-toggle="modal" data-target="#myComments">Comments</button></center>
+
+          <!-- Modal -->
+          <div class="modal fade" id="myComments" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">New Comment</h4>
+                </div>
+                <div class="modal-body">
+                     <div id="HCB_comment_box"><a href="http://www.htmlcommentbox.com">Widget</a> is loading comments...</div>
+                     <link rel="stylesheet" type="text/css" href="https://www.htmlcommentbox.com/static/skins/bootstrap/twitter-bootstrap.css?v=0" />
+                     <script type="text/javascript" id="hcb"> /*<!--*/ if(!window.hcb_user){hcb_user={};} (function(){var s=document.createElement("script"), l=hcb_user.PAGE || (""+window.location).replace(/'/g,"%27"), h="https://www.htmlcommentbox.com";s.setAttribute("type","text/javascript");s.setAttribute("src", h+"/jread?page="+encodeURIComponent(l).replace("+","%2B")+"&mod=%241%24wq1rdBcg%24mNvhwV.xuxJ06slOX4B8E%2F"+"&opts=16862&num=10&ts=1555857523537");if (typeof s!="undefined") document.getElementsByTagName("head")[0].appendChild(s);})(); /*-->*/ </script>
+                </div>
+                <div class="modal-footer-comments">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        
+        
+        </div>
+        <br>
         
     <div id="footer" class = "footer">
-        <center><h2>Twitter</h2><br>
+        <center><h2>Tweeter</h2><br>
         <p>All Rights Reserved - 2019</p></center>
     </div>
     
