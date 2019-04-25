@@ -1,0 +1,410 @@
+
+
+<html>
+
+    <script src="https://www.gstatic.com/firebasejs/5.7.3/firebase.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <style>
+        
+        .tab {
+            align-self: center;
+        }
+        .space {
+        background-color: white;
+        padding: 2.5px;
+        }
+        .content {
+        background-color: deepskyblue;
+        padding: 20px;
+        color: white;
+        }
+       
+        body,html{
+            background-color: white;
+            height: 100%;
+            margin: 0;
+            color: white;
+            padding: 6px;
+        }
+        
+        .avatar{
+            vertical-align: middle;
+            border-radius: 50%;
+            border-color: whitesmoke;
+        }
+        .big {
+            width: 50%;
+            height: 40%px;
+        }
+        .small {
+            width: 50px;
+            height: 50px;
+        }
+        .hero-image {
+            background-color: deepskyblue;
+            height: 50%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+            border-style: solid;
+            border-color: black;
+            border-bottom-style: none;
+            border-image-width: 5px;
+            box-shadow: 10px;
+        }
+        .hero-text {
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .myid {
+            position: absolute;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            width: 85%;
+        }
+        .modal-header{
+            background-color: deepskyblue;
+            color: white;
+        }
+        .left{
+            
+        }
+        .bio{
+            background-color: deepskyblue;
+            width: 22%;
+            height: 55.5%;
+            position: fixed;
+            border-style: solid;
+            border-color: black;
+            border-right-style: none;
+            border-image-width: 5px;
+            top: 12px;
+            padding: 6px;
+        }
+        
+        .copybio{
+            background-color: deepskyblue;
+            width: 22%;
+            height: 55.5%;
+            border-left-style: none;
+            border-style: solid;
+            border-color: black;
+            border-image-width: 5px;
+            top: 11px;
+            padding: 6px;
+            margin-left:77%
+        }
+        .bottombar{
+            border-bottom-style: solid;
+            border-bottom-color: white;
+        }
+        #myBtn {
+          display: none; /* Hidden by default */
+          position: fixed; /* Fixed/sticky position */
+          bottom: 20px; /* Place the button at the bottom of the page */
+          right: 30px; /* Place the button 30px from the right */
+          z-index: 99; /* Make sure it does not overlap */
+        }
+
+        #myBtn:hover {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+        
+        #newtweet:hover {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+        
+        #myComments {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+        #newcomment:hover {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+            /* Add a black background color to the top navigation */
+        .topnav {
+          background-color: deepskyblue;
+          overflow: hidden;
+          margin-left: 22%;
+          border-bottom-style: solid;
+          border-bottom-color: black;
+          border-right-style: solid;
+          border-right-color: black;
+          
+        }
+
+        /* Style the links inside the navigation bar */
+        .topnav a {
+          float: left;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 17px;
+          width: 14.5%;
+
+        }
+
+        /* Change the color of links on hover */
+        .topnav a:hover {
+          background-color:white; /* Add a dark-grey background on hover */
+          color: deepskyblue;
+          border-color: deepskyblue;  
+          text-decoration: none;    
+        }
+
+        /* Add a color to the active/current link */
+        .topnav a.active {
+          background-color: blue;
+          color: white;
+        }
+        
+        .footer {
+            width = 100%;
+            height: 15%;
+            padding:5px;
+            border-style: solid;
+            border-color: black;
+            border-bottom-style: none;
+            color: white;
+            background-color: deepskyblue;
+            font-family: Arial, Helvetica, sans-serif;
+            
+        }
+        .modal-footer-comments{
+            background-color: deepskyblue;
+            color: white;
+        }
+        #abouttable{
+            border-style: solid;
+            border-color: black;
+            background-color: deepskyblue;
+            color: white;
+            width:50%;
+        }
+        #rbio:hover {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+        #reidbio{
+            padding: 2px;
+        }
+    
+    </style>
+    <script>
+        
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyB9rwEwZ0q9kk1V_Q-N3lDy-L6EfLBXaEI",
+            authDomain: "project1-cfeb3.firebaseapp.com",
+            databaseURL: "https://project1-cfeb3.firebaseio.com",
+            projectId: "project1-cfeb3",
+            storageBucket: "project1-cfeb3.appspot.com",
+            messagingSenderId: "741193059917"
+        };
+        firebase.initializeApp(config);
+                
+        // Check to see if you are logged in
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user == null) {
+                alert("Not logged in.");
+                return;
+            } else {
+                userId = user.uid;
+                name = user.displayName;
+                imageUrl = user.photoURL;
+                email = user.email;
+                    
+                // write user data to users
+                writeUserData(userId, name, email, imageUrl);
+                
+                // write data to document
+                mydiv = document.getElementById("mydata");
+                mydiv.innerHTML = "<h1>" + name + "</h1><br><h4>" + email + "</h4>";
+                biohead = document.getElementById("bioheader");
+                biohead.innerHTML = name + "'s Bio";
+                username = document.getElementById("username");
+                username.innerHTML = "Username: " + name;
+                userimg = document.getElementById("reidbio");
+                userimg.innerHTML = "Profile Photo: <img src='" + imageUrl + "' class ='avatar big'/>";
+                
+                username.innerHTML = "Username: " + name;
+                myphotodiv = document.getElementById("myphoto");
+                myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
+
+                firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                    if (data == null) {
+                      console.log("No data found at /tweets/" + userId);  
+                    } else {
+                        
+                      firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                        var userdata = (snapshot.val());
+                        if (userdata != null) {
+                           dataarray = [data,userdata]
+                           console.log(dataarray)
+                        }
+                      });
+                      //console.log(data)
+                      //updatetweets(data);
+                    }
+                });
+            } // end user null check
+        }); // end check auth state
+        
+        function encodeImageFileAsURL() {
+
+            var filesSelected = document.getElementById("inputFileToLoad").files;
+            if (filesSelected.length > 0) {
+                var fileToLoad = filesSelected[0];
+                var fileReader = new FileReader();
+                fileReader.onload = function(fileLoadedEvent) {
+                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
+                    //var newImage = document.createElement('img');
+                    //newImage.src = srcData;
+                    //document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+                    document.getElementById("imgTest").innerHTML = srcData;
+                    //console.log("Converted Base64 version is: " + document.getElementById("imgTest").innerHTML);
+                    console.log(srcData);
+                }
+                fileReader.readAsDataURL(fileToLoad);
+            }
+        } // end function
+        
+        // write user data
+        function writeUserData(userId, name, email, imageUrl) {
+            firebase.database().ref('users/' + userId).set({
+                username: name,
+                email: email,
+                profile_picture : imageUrl
+            });
+        }
+        
+        
+        function signin() {
+            console.log("Signing in");
+            var provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithRedirect(provider).then(function(result) { 
+                window.location.replace("fbtest.html");
+            });
+        }
+        
+        function signout() {
+            console.log("Signing out");
+            firebase.auth().signOut().then(function() {
+            });
+        }
+        
+        window.onscroll = function() {scrollFunction()};
+
+            function scrollFunction() {
+              if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("myBtn").style.display = "block";
+              } else {
+                document.getElementById("myBtn").style.display = "none";
+              }
+              if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
+                  document.getElementById("bio").style.borderRightStyle = "solid";
+              }
+                else {
+                document.getElementById("bio").style.borderRightStyle = "none";
+            }
+            }
+
+            // When the user clicks on the button, scroll to the top of the document
+            function topFunction() {
+              document.body.scrollTop = 0; // For Safari
+              document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+            }
+        
+        function rbioshow(){
+            mybio = document.getElementById("reidBio");
+            mybio.innerHTML = "Reid is a Student at UCC. He is antisocial, unlikable and to be honest a complete and total loner. Also sits on the bench for varsity soccer. His favorite teacher is Mr.Hoel.";
+        }
+        function nbioshow(){
+            mybio = document.getElementById("nickBio");
+            mybio.innerHTML = "An all around beauty, Nick is probably the secound smartest person in the world, only secound to Arun, Obvously. He is a pleasure to work with. Fun fact Nick is also the president of the United States.  ";
+        }
+        function nbio2show(){
+            mybio = document.getElementById("nickBio2");
+            mybio.innerHTML = "An all around beauty, Nick is probably the secound smartest person in the world, only secound to Arun, Obvously. He is a pleasure to work with. Fun fact Nick is also the president of the United States.  ";
+        }
+
+
+    
+    </script>
+
+    <body>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        </head>
+        <div class="hero-image">
+            <div class="hero-text">
+                <h1 style="font-size:60px" id="bioheader"></h1>
+            </div>
+        </div> 
+        <!-- Add icon library -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <div class="topnav">
+          <a href="https://social-media-project.github.io/Repo-Final/">Home</a>
+          <a onclick="signin()">Sign In</a>
+          <a onclick="signout()">Sign Out</a>
+          <a href="https://social-media-project.github.io/Repo-Final/bio.html">My Bio</a>
+          <a href="https://social-media-project.github.io/Repo-Final/about.html">About</a>            
+        </div>
+        <br><br>
+        <div id="bio" class="bio">
+            <div id="myphoto"></div><br>
+            <div id="mydata" class="myid"></div>
+        </div>
+        
+        <br>
+        <button onclick="topFunction()" id="myBtn" class = "btn btn-info btn-lg"title="Go to top">Top</button>
+        <center><div id="abouttable">
+                <h1 id = "username"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="rbioshow()">Change</button><br><br>
+                </div>
+            <br>
+                <div id="abouttable">
+            <h1 id ="reidbio"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="rbioshow()">Change</button><h4 id="reidBio"></h4>
+                </div>
+            <br>
+                <div id="abouttable">
+            <h2>Biography</h2><br><h4>None</h4><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="nbioshow()">Change</button><h4 id="nickBio"></h4><br>
+                </div>
+                <br>
+
+            
+            
+                </center>
+        
+        <br>
+        
+        <br>
+        
+    <div id="footer" class = "footer">
+        <center><h2>Tweeter</h2><br>
+        <p>All Rights Reserved - 2019</p></center>
+    </div>
+    
+
+    </body>
+
+
+
+    
+</html>
