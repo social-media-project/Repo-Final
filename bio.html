@@ -81,8 +81,8 @@
             background-color: deepskyblue;
             color: white;
         }
-        .left{
-            
+        .bluetext{
+            color: deepskyblue;
         }
         .bio{
             background-color: deepskyblue;
@@ -193,12 +193,13 @@
             background-color: deepskyblue;
             color: white;
         }
-        #abouttable{
+        #biodiv{
             border-style: solid;
             border-color: black;
             background-color: deepskyblue;
             color: white;
             width:50%;
+            padding: 5px;
         }
         #rbio:hover {
           background-color:white; /* Add a background on hover */
@@ -206,6 +207,15 @@
         }
         #reidbio{
             padding: 2px;
+        }
+        #biotext{
+            display: none;
+        }
+        #submitbiobtn{
+            display: none;
+        }
+        #ubio{
+            width: 95%;
         }
     
     </style>
@@ -235,12 +245,13 @@
                 imageUrl = user.photoURL;
                 email = user.email;
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
-                
-                if (snapshot.val() == undefined){
-                   writeUserData(userId, name, email, imageUrl); 
-                }
-                console.log(snapshot.val());
+                bio = snapshot.val().Bio;
+                console.log(bio);
+                usersbio = document.getElementById("ubio");
+                usersbio.innerHTML = bio;
            });
+                
+                writeUserData(userId, name, email, imageUrl, bio); 
                     
                 // write user data to users
                 
@@ -254,8 +265,6 @@
                 username.innerHTML = "Username: " + name;
                 userimg = document.getElementById("reidbio");
                 userimg.innerHTML = "Profile Photo: <img src='" + imageUrl + "' class ='avatar big'/>";
-                
-                
                 username.innerHTML = "Username: " + name;
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
@@ -270,7 +279,7 @@
                         var userdata = (snapshot.val());
                         if (userdata != null) {
                            dataarray = [data,userdata]
-                        document.getElementById("userbio").innerHTML = userdata[userId].Bio;
+                        //document.getElementById("userbio").innerHTML = userdata[userId].Bio;
                            console.log(dataarray)
                         }
                       });
@@ -307,7 +316,7 @@
            var bioString = bio.value;
            firebase.database().ref('/users/' + userId).update({Bio: bioString});
            //firebase.database().ref('/users/' + userId + '/bio/').once('value', function(snapshot) {
-               document.getElementById("userbio").innerHTML = bioString;//snapshot.val().Bio;
+               document.getElementById("ubio").innerHTML = bioString;//snapshot.val().Bio;
             //   console.log(snapshot.val());
            //});
        }
@@ -317,11 +326,11 @@
     
         
         // write user data
-        function writeUserData(userId, name, email, imageUrl) {
-            firebase.database().ref('users/' + userId).set({
+        function writeUserData(userId, name, email, imageUrl, bio) {
+            firebase.database().ref('users/' + userId).update({
                 username: name,
                 email: email,
-                profile_picture : imageUrl
+                profile_picture : imageUrl,
             });
         }
         
@@ -361,20 +370,22 @@
               document.body.scrollTop = 0; // For Safari
               document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
             }
-        
-        var textboxshow = false;
-        function showtextbox() {
-            if (textboxshow == false){
-                document.getElementById("biotext").style.display = "block";
-                document.getElementById("rbio").innerHTML ="Hide Textbox";
-                textboxshow = true;
+    
+        function myFunction() {
+            var x = document.getElementById("biotext");
+            var y = document.getElementById("submitbiobtn")
+              if (x.style.display === "none") {
+                x.style.display = "block";
+                y.style.display = "block";
+                var cbtn = document.getElementById("changebio");
+                cbtn.innerHTML = "Hide Textbox"
+              } else {
+                x.style.display = "none";
+                y.style.display = "none";
+                var cbtn = document.getElementById("changebio");
+                cbtn.innerHTML = "Change"
+              }
             }
-            else{
-                document.getElementById("biotext").style.display = "none";
-                document.getElementById("rbio").innerHTML ="Change";
-                
-            }
-        }
 
 
     
@@ -411,16 +422,19 @@
         
         <br>
         <button onclick="topFunction()" id="myBtn" class = "btn btn-info btn-lg"title="Go to top">Top</button>
-        <center><div id="abouttable">
+        <center><div id="biodiv">
                 <h1 id = "username"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="textshow()">Change</button><br><br>
                 </div>
             <br>
-                <div id="abouttable">
+                <div id="biodiv">
             <h1 id ="reidbio"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="textshow()">Change</button><h4 id="reidBio"></h4>
                 </div>
             <br>
-                <div id="abouttable">
-            <h2>Biography</h2><br><h4 id = "userbio"></h4><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="showtextbox()">Change</button><br><textarea id ="biotext" type="text" placeholder="Enter a bio" class="textbox blacktext"></textarea><br><button class ="blacktext" onclick="setbioData()">Submit</button>
+                <div id="biodiv">
+                    <h2>Biography</h2><br>
+                    <h4 id = "ubio"></h4><br><br><button class ="btn btn-info btn-lg" id ="changebio" onclick="myFunction()">Change</button><br><br>
+                    <textarea id="biotext" type="text" name="thebio" cols="50" rows="4" placeholder="Enter a Bio" class="bluetext"></textarea><br>
+                    <button class ="btn btn-info btn-lg" onclick="setbioData()" id = "submitbiobtn">Submit</button>
                 </div>
 
             
