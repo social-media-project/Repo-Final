@@ -1,7 +1,6 @@
 
 
 
-
 <html>
 
     <script src="https://www.gstatic.com/firebasejs/5.7.3/firebase.js"></script>
@@ -311,6 +310,10 @@
         
         
         function setbioData() {
+            var x = document.getElementById("biotext");
+            var y = document.getElementById("submitbiobtn")
+            x.style.display = "none";
+            y.style.display = "none";
            //var userId = document.getElementById("uid").innerHTML;
            var bio = document.getElementById("biotext");
            var bioString = bio.value;
