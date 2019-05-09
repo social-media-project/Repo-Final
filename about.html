@@ -1,5 +1,6 @@
 
 
+
 <html>
 
     <script src="https://www.gstatic.com/firebasejs/5.7.3/firebase.js"></script>
@@ -7,6 +8,12 @@
 
     <style>
         
+        .textbox{
+            display: none;
+        }
+        .blacktext{
+            color: black;
+        }
         .tab {
             align-self: center;
         }
@@ -73,8 +80,8 @@
             background-color: deepskyblue;
             color: white;
         }
-        .left{
-            
+        .bluetext{
+            color: deepskyblue;
         }
         .bio{
             background-color: deepskyblue;
@@ -185,12 +192,13 @@
             background-color: deepskyblue;
             color: white;
         }
-        #abouttable{
+        #biodiv{
             border-style: solid;
             border-color: black;
             background-color: deepskyblue;
             color: white;
             width:50%;
+            padding: 5px;
         }
         #rbio:hover {
           background-color:white; /* Add a background on hover */
@@ -199,9 +207,20 @@
         #reidbio{
             padding: 2px;
         }
+        #biotext{
+            display: none;
+        }
+        #submitbiobtn{
+            display: none;
+        }
+        #ubio{
+            width: 95%;
+        }
     
     </style>
     <script>
+        
+     
         
         // Initialize Firebase
         var config = {
@@ -224,13 +243,28 @@
                 name = user.displayName;
                 imageUrl = user.photoURL;
                 email = user.email;
+                firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
+                bio = snapshot.val().Bio;
+                console.log(bio);
+                usersbio = document.getElementById("ubio");
+                usersbio.innerHTML = bio;
+           });
+                
+                writeUserData(userId, name, email, imageUrl, bio); 
                     
                 // write user data to users
-                writeUserData(userId, name, email, imageUrl);
+                
                 
                 // write data to document
                 mydiv = document.getElementById("mydata");
                 mydiv.innerHTML = "<h1>" + name + "</h1><br><h4>" + email + "</h4>";
+                biohead = document.getElementById("bioheader");
+                biohead.innerHTML = name + "'s Bio";
+                username = document.getElementById("username");
+                username.innerHTML = "Username: " + name;
+                userimg = document.getElementById("reidbio");
+                userimg.innerHTML = "Profile Photo: <img src='" + imageUrl + "' class ='avatar big'/>";
+                username.innerHTML = "Username: " + name;
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
 
@@ -244,6 +278,7 @@
                         var userdata = (snapshot.val());
                         if (userdata != null) {
                            dataarray = [data,userdata]
+                        //document.getElementById("userbio").innerHTML = userdata[userId].Bio;
                            console.log(dataarray)
                         }
                       });
@@ -273,12 +308,34 @@
             }
         } // end function
         
+        
+        function setbioData() {
+            var x = document.getElementById("biotext");
+            var y = document.getElementById("submitbiobtn")
+            x.style.display = "none";
+            y.style.display = "none";
+            var cbtn = document.getElementById("changebio");
+            cbtn.innerHTML = "Change"
+           //var userId = document.getElementById("uid").innerHTML;
+           var bio = document.getElementById("biotext");
+           var bioString = bio.value;
+           firebase.database().ref('/users/' + userId).set({Bio: bioString});
+           //firebase.database().ref('/users/' + userId + '/bio/').once('value', function(snapshot) {
+               document.getElementById("ubio").innerHTML = bioString;//snapshot.val().Bio;
+            //   console.log(snapshot.val());
+           //});
+       }
+        
+
+        
+    
+        
         // write user data
-        function writeUserData(userId, name, email, imageUrl) {
-            firebase.database().ref('users/' + userId).set({
+        function writeUserData(userId, name, email, imageUrl, bio) {
+            firebase.database().ref('users/' + userId).update({
                 username: name,
                 email: email,
-                profile_picture : imageUrl
+                profile_picture : imageUrl,
             });
         }
         
@@ -318,19 +375,22 @@
               document.body.scrollTop = 0; // For Safari
               document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
             }
-        
-        function rbioshow(){
-            mybio = document.getElementById("reidBio");
-            mybio.innerHTML = "Reid is a Student at UCC. He is antisocial, unlikable and to be honest a complete and total loner. Also sits on the bench for varsity soccer. His favorite teacher is Mr.Hoel.";
-        }
-        function nbioshow(){
-            mybio = document.getElementById("nickBio");
-            mybio.innerHTML = "An all around beauty, Nick is probably the secound smartest person in the world, only secound to Arun, Obvously. He is a pleasure to work with. Fun fact Nick is also the president of the United States.  ";
-        }
-        function nbio2show(){
-            mybio = document.getElementById("nickBio2");
-            mybio.innerHTML = "An all around beauty, Nick is probably the secound smartest person in the world, only secound to Arun, Obvously. He is a pleasure to work with. Fun fact Nick is also the president of the United States.  ";
-        }
+    
+        function myFunction() {
+            var x = document.getElementById("biotext");
+            var y = document.getElementById("submitbiobtn")
+              if (x.style.display === "none") {
+                x.style.display = "block";
+                y.style.display = "block";
+                var cbtn = document.getElementById("changebio");
+                cbtn.innerHTML = "Hide Textbox"
+              } else {
+                x.style.display = "none";
+                y.style.display = "none";
+                var cbtn = document.getElementById("changebio");
+                cbtn.innerHTML = "Change"
+              }
+            }
 
 
     
@@ -346,7 +406,7 @@
         </head>
         <div class="hero-image">
             <div class="hero-text">
-                <h1 style="font-size:60px">About</h1>
+                <h1 style="font-size:60px" id="bioheader"></h1>
             </div>
         </div> 
         <!-- Add icon library -->
@@ -356,10 +416,9 @@
           <a href="https://social-media-project.github.io/Repo-Final/">Home</a>
           <a onclick="signin()">Sign In</a>
           <a onclick="signout()">Sign Out</a>
-          <a href="https://social-media-project.github.io/Repo-Final/bio.html"">My Bio</a>
+          <a href="https://social-media-project.github.io/Repo-Final/bio.html">My Bio</a>
           <a href="https://social-media-project.github.io/Repo-Final/about.html">About</a>            
         </div>
-        
         <br><br>
         <div id="bio" class="bio">
             <div id="myphoto"></div><br>
@@ -368,26 +427,21 @@
         
         <br>
         <button onclick="topFunction()" id="myBtn" class = "btn btn-info btn-lg"title="Go to top">Top</button>
-        <center><div id="abouttable">
-                <h1>Developers</h1><br>
+        <center><div id="biodiv">
+                <h1 id = "username"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="textshow()">Change</button><br><br>
                 </div>
             <br>
-                <div id="abouttable">
-            <h2>Reid Gledhill</h2><br><img src =Reido.jpg width="40%" id="reidbio"><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="rbioshow()">Bio</button><h4 id="reidBio"></h4>
+                <div id="biodiv">
+            <h1 id ="reidbio"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="textshow()">Change</button><h4 id="reidBio"></h4>
                 </div>
             <br>
-                <div id="abouttable">
-            <h2>Nick Cai</h2><br><img src =nick.jpg width="40%" id="reidbio"><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="nbioshow()">Bio</button><h4 id="nickBio"></h4><br>
+                <div id="biodiv">
+                    <h2>Biography</h2><br>
+                    <h4 id = "ubio"></h4><br><br><button class ="btn btn-info btn-lg" id ="changebio" onclick="myFunction()">Change</button><br><br>
+                    <textarea id="biotext" type="text" name="thebio" cols="50" rows="4" placeholder="Enter a Bio" class="bluetext"></textarea><br>
+                    <button class ="btn btn-info btn-lg" onclick="setbioData()" id = "submitbiobtn">Submit</button>
                 </div>
-                <br>
-            <center><div id="abouttable">
-                <h1>Wiki Management Team</h1><br>
-                </div>
-                <br>
-                <div id="abouttable">
-            <h2>Nick Cai</h2><br><img src =nick.jpg width="40%" id="reidbio"><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="nbio2show()">Bio</button><h4 id="nickBio2"></h4><br>
-                </div>
-                <br>
+
             
             
                 </center>
