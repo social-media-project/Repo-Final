@@ -10,15 +10,113 @@
         .tab {
             align-self: center;
         }
-        .space {
-        background-color: white;
-        padding: 2.5px;
-        }
         .content {
         background-color: deepskyblue;
         padding: 20px;
         color: white;
         }
+        
+        .modal-header{
+            background-color: deepskyblue;
+            color: white;
+        }
+        
+        #newtweet:hover {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+        
+        #myComments {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+        #newcomment:hover {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+            /* Add a black background color to the top navigation */
+        .topnav {
+          background-color: deepskyblue;
+          overflow: hidden;
+          margin-left: 22%;
+          border-bottom-style: solid;
+          border-bottom-color: black;
+          border-right-style: solid;
+          border-right-color: black;
+          
+        }
+
+        /* Style the links inside the navigation bar */
+        .topnav a {
+          float: left;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 17px;
+          width: 14.5%;
+
+        }
+
+        /* Change the color of links on hover */
+        .topnav a:hover {
+          background-color:white; /* Add a dark-grey background on hover */
+          color: deepskyblue;
+          border-color: deepskyblue;  
+          text-decoration: none;    
+        }
+
+        /* Add a color to the active/current link */
+        .topnav a.active {
+          background-color: blue;
+          color: white;
+        }
+        
+        #abouttable{
+            border-style: solid;
+            border-color: black;
+            background-color: deepskyblue;
+            color: white;
+            width:50%;
+        }
+        #rbio:hover {
+          background-color:white; /* Add a background on hover */
+          color: deepskyblue;
+        }
+        #reidbio{
+            padding: 2px;
+        }
+        
+        #biodiv{
+            color: white;
+        }
+        #editprofile{
+            text-decoration: none;
+            color: white;
+        }
+        #editprofile:hover {
+            text-decoration: none;
+            color: deepskyblue;
+        }
+        #profilelink:hover{
+          background-color:white; /* Add a background on hover */
+          color:deepskyblue;
+        }
+        #biodiv{
+            width: 95%;
+            height: 5%;
+        }
+        #profile{
+            bottom: 5px;
+        }
+         .myid {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            padding: 5px;
+            background-color: white;
+            color: deepskyblue;
+        }
+
        
         body,html{
             background-color: white;
@@ -63,19 +161,8 @@
             color: white;
             font-family: Arial, Helvetica, sans-serif;
         }
-        .myid {
-            position: absolute;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-            width: 85%;
-        }
-        .modal-header{
-            background-color: deepskyblue;
-            color: white;
-        }
-        .left{
-            
-        }
+
+
         .bio{
             background-color: deepskyblue;
             width: 22%;
@@ -132,42 +219,6 @@
           color: deepskyblue;
         }
             /* Add a black background color to the top navigation */
-        .topnav {
-          background-color: deepskyblue;
-          overflow: hidden;
-          margin-left: 22%;
-          border-bottom-style: solid;
-          border-bottom-color: black;
-          border-right-style: solid;
-          border-right-color: black;
-          
-        }
-
-        /* Style the links inside the navigation bar */
-        .topnav a {
-          float: left;
-          color: #f2f2f2;
-          text-align: center;
-          padding: 14px 16px;
-          text-decoration: none;
-          font-size: 17px;
-          width: 14.5%;
-
-        }
-
-        /* Change the color of links on hover */
-        .topnav a:hover {
-          background-color:white; /* Add a dark-grey background on hover */
-          color: deepskyblue;
-          border-color: deepskyblue;  
-          text-decoration: none;    
-        }
-
-        /* Add a color to the active/current link */
-        .topnav a.active {
-          background-color: blue;
-          color: white;
-        }
         
         .footer {
             width = 100%;
@@ -203,22 +254,10 @@
           background-color:white; /* Add a background on hover */
           color:deepskyblue;
         }
-        #biodiv{
-            width: 95%;
-            height: 5%;
-        }
-         .myid {
-            font-family: Arial, Helvetica, sans-serif;
-            width: 100%;
-            padding: 5px;
-            background-color: white;
-            color: deepskyblue;
-        }
-    
-
     
     </style>
-    <script>
+    
+     <script>
         
         // Initialize Firebase
         var config = {
@@ -241,7 +280,9 @@
                 name = user.displayName;
                 imageUrl = user.photoURL;
                 email = user.email;
+                console.log("here");
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
+                console.log(snapshot.val());
                 bio = snapshot.val().Bio;
                 console.log(bio);
                 u = bio.length;
@@ -437,6 +478,11 @@
                 document.getElementById("bio").style.borderRadius = "0px";
                 }
             }
+         
+         function topFunction() {
+              document.body.scrollTop = 0; // For Safari
+              document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+            }
         
 
     
@@ -450,9 +496,10 @@
           <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
           <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
         </head>
+        
         <div class="hero-image">
             <div class="hero-text">
-                <h1 style="font-size:60px">Tweeter <img src="l.png" width = 50px;></h1>
+                <h1 style="font-size:60px">The Feed <img src="l.png" width = 50px;></h1>
             </div>
         </div> 
         <!-- Add icon library -->
@@ -474,6 +521,8 @@
             </center>
         </div>
         
+        <br>
+
         <br>
         
         <div class="container">
@@ -544,6 +593,7 @@
         
         </div>
         <br>
+        
         
     <div id="footer" class = "footer">
         <center><h2>Tweeter</h2><br>
