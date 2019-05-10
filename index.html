@@ -82,11 +82,11 @@
             height: 55.5%;
             position: fixed;
             border-style: solid;
-            border-color: black;
             border-right-style: none;
             border-image-width: 5px;
             top: 12px;
-            padding: 6px;
+            padding-top: 6px;
+            border-radius: 0px;
         }
         
         .copybio{
@@ -188,6 +188,33 @@
         .ttable{
             width: 50%;
         }
+        #biodiv{
+            color: white;
+        }
+        #editprofile{
+            text-decoration: none;
+            color: white;
+        }
+        #editprofile:hover {
+            text-decoration: none;
+            color: deepskyblue;
+        }
+        #profilelink:hover{
+          background-color:white; /* Add a background on hover */
+          color:deepskyblue;
+        }
+        #biodiv{
+            width: 95%;
+            height: 5%;
+        }
+         .myid {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            padding: 5px;
+            background-color: white;
+            color: deepskyblue;
+        }
+    
 
     
     </style>
@@ -214,13 +241,29 @@
                 name = user.displayName;
                 imageUrl = user.photoURL;
                 email = user.email;
+                firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
+                bio = snapshot.val().Bio;
+                console.log(bio);
+                u = bio.length;
+                console.log(u)
+                if (u < 100){
+                    usersbio = document.getElementById("thebio");
+                    usersbio.innerHTML = bio;
+                    console.log("it's here");
+                }
+                else{
+                    usersbio = document.getElementById("thebio");
+                    usersbio.innerHTML = "Visit My Bio To View Full Bio";
+                }
+
+           });
                     
                 // write user data to users
-                writeUserData(userId, name, email, imageUrl);
+                writeUserData(userId, name, email, imageUrl, bio); 
                 
                 // write data to document
                 mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = "<h1>" + name + "</h1><br><h4>" + email + "</h4>";
+                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
 
@@ -265,11 +308,11 @@
         } // end function
         
         // write user data
-        function writeUserData(userId, name, email, imageUrl) {
-            firebase.database().ref('users/' + userId).set({
+        function writeUserData(userId, name, email, imageUrl, bio) {
+            firebase.database().ref('users/' + userId).update({
                 username: name,
                 email: email,
-                profile_picture : imageUrl
+                profile_picture : imageUrl,
             });
         }
         
@@ -318,7 +361,24 @@
             var nameValue = twitdoc.value;
             var imgValue = twitimg.innerHTML;
             var js_time = Date.now();
-            var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue});
+            
+            if (nameValue==""){
+                alert("No Message");
+            }
+            else if (nameValue.indexOf("fuck")>=0){
+                alert("No Swearing");
+            }
+            else if (nameValue.indexOf("bitch")>=0){
+                alert("No Swearing");
+            }
+            else if (nameValue.indexOf("shit")>=0){
+                alert("No Swearing");
+            }
+            else if (nameValue.indexOf("ben")>=0 && nameValue.indexOf("best")>=0 && nameValue.indexOf("not")<0){
+                alert("No false statments");
+            }
+            else{
+                var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue});
             twitdoc.value = "";
             console.log("tweet written")
             
@@ -337,6 +397,7 @@
                       });
                     }
                 });
+            }
             
             
             
@@ -363,21 +424,18 @@
             function scrollFunction() {
               if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
                 document.getElementById("myBtn").style.display = "block";
-              } else {
+              } 
+                else {
                 document.getElementById("myBtn").style.display = "none";
               }
-              if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
+              if (document.body.scrollTop > 2 || document.documentElement.scrollTop > 2){
                   document.getElementById("bio").style.borderRightStyle = "solid";
+                  document.getElementById("bio").style.borderRadius = "15px";
               }
                 else {
                 document.getElementById("bio").style.borderRightStyle = "none";
-            }
-            }
-
-            // When the user clicks on the button, scroll to the top of the document
-            function topFunction() {
-              document.body.scrollTop = 0; // For Safari
-              document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+                document.getElementById("bio").style.borderRadius = "0px";
+                }
             }
         
 
@@ -405,13 +463,18 @@
           <a onclick="signin()">Sign In</a>
           <a onclick="signout()">Sign Out</a>
           <a href="https://social-media-project.github.io/Repo-Final/bio.html">My Bio</a>
-          <a href="https://social-media-project.github.io/Repo-Final/about.html">About</a>            
+          <a href="https://social-media-project.github.io/Repo-Final/about.html">About</a>           
         </div>
         <br><br>
         <div id="bio" class="bio">
-            <div id="myphoto"></div><br>
-            <div id="mydata" class="myid"></div>
+            <center><div id="myphoto"></div></center><br>
+            <center><div id="mydata" class="myid"></div></center>
+            <center><div id ="biodiv"><h6 id ="thebio"></h6></div><br>
+            <div id ="profile"><button class="btn btn-info btn-lg"  id="profilelink"><a href="https://social-media-project.github.io/Repo-Final/bio.html" id="editprofile">Edit Profile</a></button></div>
+            </center>
         </div>
+        
+        <br>
         
         <div class="container">
           <!-- Trigger the modal with a button -->
@@ -446,7 +509,7 @@
         
         <br>
         <button onclick="topFunction()" id="myBtn" class = "btn btn-info btn-lg"title="Go to top">Top</button>
-    <center><div id="mytweets" class="ttable"></div></center>
+    <center><div id="mytweets" class ="ttable"></div></center>
         
         <br>
         <div id = "comments">
