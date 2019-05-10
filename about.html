@@ -63,31 +63,23 @@
             color: white;
             font-family: Arial, Helvetica, sans-serif;
         }
-        .myid {
-            position: absolute;
-            color: deepskyblue;
-            font-family: Arial, Helvetica, sans-serif;
-            width: 100%;
-            background-color: white;
         }
         .modal-header{
             background-color: deepskyblue;
             color: white;
         }
-        .left{
-            
-        }
+ 
         .bio{
             background-color: deepskyblue;
             width: 22%;
             height: 55.5%;
             position: fixed;
             border-style: solid;
-            border-color: black;
             border-right-style: none;
             border-image-width: 5px;
             top: 12px;
-            padding: 6px;
+            padding-top: 6px;
+            border-radius: 0px;
         }
         
         .copybio{
@@ -200,9 +192,43 @@
         #reidbio{
             padding: 2px;
         }
+        
+        #biodiv{
+            color: white;
+        }
+        #editprofile{
+            text-decoration: none;
+            color: white;
+        }
+        #editprofile:hover {
+            text-decoration: none;
+            color: deepskyblue;
+        }
+        #profilelink:hover{
+          background-color:white; /* Add a background on hover */
+          color:deepskyblue;
+        }
+        #biodiv{
+            width: 95%;
+            height: 5%;
+        }
+        #profile{
+            bottom: 5px;
+        }
+         .myid {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            padding: 5px;
+            background-color: white;
+            color: deepskyblue;
+        }
     
     </style>
     <script>
+        
+        // Initialize Firebase
+                
+     
         
         // Initialize Firebase
         var config = {
@@ -216,7 +242,7 @@
         firebase.initializeApp(config);
                 
         // Check to see if you are logged in
-               firebase.auth().onAuthStateChanged(function(user) {
+        firebase.auth().onAuthStateChanged(function(user) {
             if (user == null) {
                 alert("Not logged in.");
                 return;
@@ -228,16 +254,27 @@
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
                 bio = snapshot.val().Bio;
                 console.log(bio);
-                usersbio = document.getElementById("ubio");
-                usersbio.innerHTML = bio;
+                u = bio.length;
+                console.log(u)
+                if (u < 100){
+                    usersbio = document.getElementById("ubio");
+                    usersbio.innerHTML = bio;
+                }
+                else{
+                    usersbio = document.getElementById("ubio");
+                    usersbio.innerHTML = "Visit My Bio To View Full Bio";
+                }
+
            });
+                
+                writeUserData(userId, name, email, imageUrl, bio); 
                     
                 // write user data to users
-                writeUserData(userId, name, email, imageUrl,bio);
+                
                 
                 // write data to document
                 mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = "<h1>" + name + "</h1><br><h4>" + email + "</h4>";
+                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
 
@@ -251,6 +288,7 @@
                         var userdata = (snapshot.val());
                         if (userdata != null) {
                            dataarray = [data,userdata]
+                        //document.getElementById("userbio").innerHTML = userdata[userId].Bio;
                            console.log(dataarray)
                         }
                       });
@@ -278,17 +316,15 @@
                 }
                 fileReader.readAsDataURL(fileToLoad);
             }
-        } // end function
-        
-        // write user data
-        function writeUserData(userId, name, email, imageUrl, bio) {
-            firebase.database().ref('users/' + userId).set({
-                username: name,
-                email: email,
-                profile_picture : imageUrl
-            });
         }
         
+        function writeUserData(userId, name, email, imageUrl, bio) {
+            firebase.database().ref('users/' + userId).update({
+                username: name,
+                email: email,
+                profile_picture : imageUrl,
+            });
+        }
         
         function signin() {
             console.log("Signing in");
@@ -309,16 +345,20 @@
             function scrollFunction() {
               if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
                 document.getElementById("myBtn").style.display = "block";
-              } else {
+              } 
+                else {
                 document.getElementById("myBtn").style.display = "none";
               }
-              if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
+              if (document.body.scrollTop > 2 || document.documentElement.scrollTop > 2){
                   document.getElementById("bio").style.borderRightStyle = "solid";
+                  document.getElementById("bio").style.borderRadius = "15px";
               }
                 else {
                 document.getElementById("bio").style.borderRightStyle = "none";
+                document.getElementById("bio").style.borderRadius = "0px";
+                }
             }
-            }
+
 
             // When the user clicks on the button, scroll to the top of the document
             function topFunction() {
@@ -364,12 +404,15 @@
           <a onclick="signin()">Sign In</a>
           <a onclick="signout()">Sign Out</a>
           <a href="https://social-media-project.github.io/Repo-Final/bio.html">My Bio</a>
-          <a href="#https://social-media-project.github.io/Repo-Final/about.html">About</a>            
+          <a href="https://social-media-project.github.io/Repo-Final/about.html">About</a>           
         </div>
         <br><br>
         <div id="bio" class="bio">
             <center><div id="myphoto"></div></center><br>
             <center><div id="mydata" class="myid"></div></center>
+            <center><div id ="biodiv"><h6 id ="ubio"></h6></div><br>
+            <div id ="profile"><button class="btn btn-info btn-lg"  id="profilelink"><a href="https://social-media-project.github.io/Repo-Final/bio.html" id="editprofile">Edit Profile</a></button></div>
+            </center>
         </div>
         
         <br>
