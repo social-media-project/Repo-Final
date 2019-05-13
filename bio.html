@@ -33,17 +33,14 @@
             border-radius: 50%;
             border-color: whitesmoke;
         }
-        .bigger{
-            width: 40%;
-            height: 40%px;
-        }
+
         .big {
-            width: 20%;
-            height: 20%px;
+            width: 30%;
+            height: 26%;
         }
         .small {
-            width: 50px;
-            height: 50px;
+            width: 50%;
+            height: 36%;
         }
         .hero-image {
             background-color: deepskyblue;
@@ -274,6 +271,12 @@
         #usernametext{
             display: none;
         }
+        #inputFileToLoad {
+            display: none;
+        }
+        #submitimgbtn {
+            display: none;
+        }
 
     
     </style>
@@ -301,50 +304,50 @@
                 return;
             } else {
                 userId = user.uid;
-                imageUrl = user.photoURL;
                 email = user.email;
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
-                name = snapshot.val().username;
-                console.log(name);
-                mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
-                biohead = document.getElementById("bioheader");
-                biohead.innerHTML = name + "'s Bio";
-                username = document.getElementById("username");
-                username.innerHTML = "Username: " + name;
+                    imageUrl = snapshot.val().profile_picture;
+                    console.log(imageUrl); 
+                    userimg = document.getElementById("uimg");
+                    userimg.innerHTML = "Profile Photo: <img src='" + imageUrl + "' class ='avatar big'/>";
+                    myphotodiv = document.getElementById("myphoto");
+                    myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar small'/>";
                 });
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
-                bio = snapshot.val().Bio;
-                console.log(bio);
-                u = bio.length;
-                console.log(u)
-                thebio = document.getElementById("userbio");
-                thebio.innerHTML = bio;
-                if (u < 100){
-                    usersbio = document.getElementById("ubio");
-                    usersbio.innerHTML = bio;
-                }
-                else{
-                    usersbio = document.getElementById("ubio");
-                    usersbio.innerHTML = "Visit My Bio To View Full Bio";
-                }
+                    name = snapshot.val().username;
+                    console.log(name);
+                    mydiv = document.getElementById("mydata");
+                    mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
+                    biohead = document.getElementById("bioheader");
+                    biohead.innerHTML = name + "'s Bio";
+                    username = document.getElementById("username");
+                    username.innerHTML = "Username: " + name;
+                });
+                firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
+                    bio = snapshot.val().Bio;
+                    console.log(bio);
+                    u = bio.length;
+                    console.log(u)
+                    thebio = document.getElementById("userbio");
+                    thebio.innerHTML = bio;
+                    if (u < 100){
+                        usersbio = document.getElementById("ubio");
+                        usersbio.innerHTML = bio;
+                    }
+                    else{
+                        usersbio = document.getElementById("ubio");
+                        usersbio.innerHTML = "Visit My Bio To View Full Bio";
+                    }
 
-           });
+                });
                 
-                writeUserData(userId, name, email, imageUrl, bio); 
+                writeUserData(email); 
                     
                 // write user data to users
                 
                 
                 // write data to document
-
-                userimg = document.getElementById("reidbio");
-                userimg.innerHTML = "Profile Photo: <img src='" + imageUrl + "' class ='avatar big'/>";
-                myphotodiv = document.getElementById("myphoto");
-                myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar bigger'/>";
                 
-                
-
                 firebase.database().ref('/tweets').once('value').then(function(snapshot) {
                     var data = (snapshot.val());
                     if (data == null) {
@@ -366,75 +369,10 @@
             } // end user null check
         }); // end check auth state
         
-        function encodeImageFileAsURL() {
-
-            var filesSelected = document.getElementById("inputFileToLoad").files;
-            if (filesSelected.length > 0) {
-                var fileToLoad = filesSelected[0];
-                var fileReader = new FileReader();
-                fileReader.onload = function(fileLoadedEvent) {
-                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
-                    //var newImage = document.createElement('img');
-                    //newImage.src = srcData;
-                    //document.getElementById("imgTest").innerHTML = newImage.outerHTML;
-                    document.getElementById("imgTest").innerHTML = srcData;
-                    //console.log("Converted Base64 version is: " + document.getElementById("imgTest").innerHTML);
-                    console.log(srcData);
-                }
-                fileReader.readAsDataURL(fileToLoad);
-            }
-        }
         
-        function tweet() {
-            
-            var twitdoc = document.getElementById("twit");
-            var twitimg = document.getElementById("imgTest");
-            var nameValue = twitdoc.value;
-            var imgValue = twitimg.innerHTML;
-            var js_time = Date.now();
-            
-            if (nameValue==""){
-                alert("No Message");
-            }
-            else if (nameValue.indexOf("fuck")>=0){
-                alert("No Swearing");
-            }
-            else if (nameValue.indexOf("bitch")>=0){
-                alert("No Swearing");
-            }
-            else if (nameValue.indexOf("shit")>=0){
-                alert("No Swearing");
-            }
-            else if (nameValue.indexOf("ben")>=0 && nameValue.indexOf("best")>=0 && nameValue.indexOf("not")<0){
-                alert("No false statments");
-            }
-            else{
-                var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue});
-            twitdoc.value = "";
-            console.log("tweet written")
-            
-            firebase.database().ref('/tweets').once('value').then(function(snapshot) {
-                    var data = (snapshot.val());
-                    if (data == null) {
-                      console.log("No data found at /tweets/" + userId);  
-                    } else { 
-                        firebase.database().ref('/users').once('value').then(function(snapshot) { 
-                        var userdata = (snapshot.val());
-                        if (userdata != null) {
-                           dataarray = [data,userdata]
-                           console.log(dataarray)
-                           updatetweets(dataarray); 
-                        }
-                      });
-                    }
-                });
-            }
-        }
-        
-        function writeUserData(userId, name, email, imageUrl, bio) {
+        function writeUserData(email) {
             firebase.database().ref('users/' + userId).update({
                 email: email,
-                profile_picture : imageUrl,
             });
         }
         
@@ -478,6 +416,25 @@
               document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
             }
         
+        function encodeImageFileAsURL() {
+
+            var filesSelected = document.getElementById("inputFileToLoad").files;
+            if (filesSelected.length > 0) {
+                var fileToLoad = filesSelected[0];
+                var fileReader = new FileReader();
+                fileReader.onload = function(fileLoadedEvent) {
+                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
+                    //var newImage = document.createElement('img');
+                    //newImage.src = srcData;
+                    //document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+                    document.getElementById("imgTest").innerHTML = srcData;
+                    //console.log("Converted Base64 version is: " + document.getElementById("imgTest").innerHTML);
+                    console.log(srcData);
+                }
+                fileReader.readAsDataURL(fileToLoad);
+            }
+        } 
+        
         function setbioData() {
             var x = document.getElementById("biotext");
             var y = document.getElementById("submitbiobtn")
@@ -512,9 +469,26 @@
            //});
        }
         
+        function setImg() {
+            var x = document.getElementById("usernametext");
+            var y = document.getElementById("submitimgbtn")
+            x.style.display = "none";
+            y.style.display = "none";
+            var cbtn = document.getElementById("changeimg");
+            cbtn.innerHTML = "Change"
+           //var userId = document.getElementById("uid").innerHTML;
+           twitimg = document.getElementById("imgTest");
+           var imgValue = twitimg.innerHTML;
+           firebase.database().ref('/users/' + userId).update({profile_picture: imgValue});
+           //firebase.database().ref('/users/' + userId + '/bio/').once('value', function(snapshot) {
+            myphotodiv = document.getElementById("uimg");
+            myphotodiv.innerHTML = "<img src='" + imgValue + "' class ='avatar bigger'/>";
+           //});
+       }
+        
         function myFunction() {
             var x = document.getElementById("biotext");
-            var y = document.getElementById("submitbiobtn")
+            var y = document.getElementById("submitbiobtn");
               if (x.style.display === "none") {
                 x.style.display = "block";
                 y.style.display = "block";
@@ -540,6 +514,22 @@
                 x.style.display = "none";
                 y.style.display = "none";
                 var cbtn = document.getElementById("changename");
+                cbtn.innerHTML = "Change"
+              }
+            }
+        
+        function myImg() {
+            var x = document.getElementById("inputFileToLoad");
+            var y = document.getElementById("submitimgbtn")
+              if (x.style.display === "none") {
+                x.style.display = "block";
+                y.style.display = "block";
+                var cbtn = document.getElementById("changeimg");
+                cbtn.innerHTML = "Hide Textbox"
+              } else {
+                x.style.display = "none";
+                y.style.display = "none";
+                var cbtn = document.getElementById("changeimg");
                 cbtn.innerHTML = "Change"
               }
             }
@@ -590,8 +580,11 @@
                     <button class ="btn btn-info btn-lg" onclick="setUsername()" id = "submitnamebtn">Submit</button>
                 </div>
             <br>
-                <div id="datadiv">
-            <h1 id ="reidbio"></h1><button class ="btn btn-info btn-lg" id ="rbio" onclick="myFunction()">Change</button><h4 id="reidBio"></h4>
+                <div id="divchange">
+                    <h1 id = "uimg"></h1><br><button class ="btn btn-info btn-lg" id ="changeimg" onclick="myImg()">Change</button><br><br>
+                    <br><input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" />
+                    <div id="imgTest" style="display:none;"></div><br>
+                    <button class ="btn btn-info btn-lg" onclick="setImg()" id = "submitimgbtn">Submit</button>
                 </div>
             <br>
                 <div id="divchange">
