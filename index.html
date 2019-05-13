@@ -134,7 +134,7 @@
         }
         .big {
             width: 50%;
-            height: 40%px;
+            height: 36%;
         }
         .small {
             width: 50px;
@@ -279,38 +279,42 @@
                 return;
             } else {
                 userId = user.uid;
-                imageUrl = user.photoURL;
                 email = user.email;
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
-                name = snapshot.val().username;
-                console.log(name);
-                mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
+                    imageUrl = snapshot.val().profile_picture;
+                    console.log(imageUrl); 
+                    myphotodiv = document.getElementById("myphoto");
+                    myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
                 });
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
-                console.log(snapshot.val());
-                bio = snapshot.val().Bio;
-                console.log(bio);
-                u = bio.length;
-                console.log(u)
-                if (u < 100){
-                    usersbio = document.getElementById("thebio");
-                    usersbio.innerHTML = bio;
-                    console.log("it's here");
-                }
-                else{
-                    usersbio = document.getElementById("thebio");
-                    usersbio.innerHTML = "Visit My Bio To View Full Bio";
-                }
+                    name = snapshot.val().username;
+                    console.log(name);
+                    mydiv = document.getElementById("mydata");
+                    mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
+                });
+                firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
+                    console.log(snapshot.val());
+                    bio = snapshot.val().Bio;
+                    console.log(bio);
+                    u = bio.length;
+                    console.log(u)
+                    if (u < 100){
+                        usersbio = document.getElementById("thebio");
+                        usersbio.innerHTML = bio;
+                        console.log("it's here");
+                    }
+                    else{
+                        usersbio = document.getElementById("thebio");
+                        usersbio.innerHTML = "Visit My Bio To View Full Bio";
+                    }
 
-           });
-                    
-                // write user data to users
-                writeUserData(userId, name, email, imageUrl, bio); 
+               });
+
+                    // write user data to users
+                writeUserData(email); 
                 
                 // write data to document
-                myphotodiv = document.getElementById("myphoto");
-                myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
+
 
                 firebase.database().ref('/tweets').once('value').then(function(snapshot) {
                     var data = (snapshot.val());
@@ -353,10 +357,9 @@
         } // end function
         
         // write user data
-        function writeUserData(userId, name, email, imageUrl, bio) {
+        function writeUserData(email) {
             firebase.database().ref('users/' + userId).update({
                 email: email,
-                profile_picture : imageUrl,
             });
         }
         
