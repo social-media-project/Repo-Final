@@ -1,6 +1,5 @@
 
 
-
 <html>
 
     <script src="https://www.gstatic.com/firebasejs/5.7.3/firebase.js"></script>
@@ -239,15 +238,6 @@
             height: 33%;
             padding: 5px;
         }
-        #divbio{
-            border-style: solid;
-            border-color: black;
-            background-color: deepskyblue;
-            color: white;
-            width:50%;
-            padding: 5px;
-        }
-            
         #submitbiobtn{
             display: none;
         }
@@ -255,9 +245,34 @@
             color: deepskyblue;
             background-color: white;
         }
+        #submitnamebtn{
+            display: none;
+        }
+        #submitnamebtn:hover{
+            color: deepskyblue;
+            background-color: white;
+        }
         #changebio:hover{
             color: deepskyblue;
             background-color: white;
+        }
+        #changename:hover{
+            color: deepskyblue;
+            background-color: white;
+        }
+        #divchange{
+            border-style: solid;
+            border-color: black;
+            background-color: deepskyblue;
+            color: white;
+            width:50%;
+            padding: 5px;
+        }
+        .bluetext{
+            color: deepskyblue;
+        }
+        #usernametext{
+            display: none;
         }
 
     
@@ -286,9 +301,18 @@
                 return;
             } else {
                 userId = user.uid;
-                name = user.displayName;
                 imageUrl = user.photoURL;
                 email = user.email;
+                firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
+                name = snapshot.val().username;
+                console.log(name);
+                mydiv = document.getElementById("mydata");
+                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
+                biohead = document.getElementById("bioheader");
+                biohead.innerHTML = name + "'s Bio";
+                username = document.getElementById("username");
+                username.innerHTML = "Username: " + name;
+                });
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
                 bio = snapshot.val().Bio;
                 console.log(bio);
@@ -313,17 +337,9 @@
                 
                 
                 // write data to document
-                mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
-                mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = "<h1>" + name + "</h1><br><h4>" + email + "</h4>";
-                biohead = document.getElementById("bioheader");
-                biohead.innerHTML = name + "'s Bio";
-                username = document.getElementById("username");
-                username.innerHTML = "Username: " + name;
+
                 userimg = document.getElementById("reidbio");
                 userimg.innerHTML = "Profile Photo: <img src='" + imageUrl + "' class ='avatar big'/>";
-                username.innerHTML = "Username: " + name;
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar bigger'/>";
                 
@@ -417,7 +433,6 @@
         
         function writeUserData(userId, name, email, imageUrl, bio) {
             firebase.database().ref('users/' + userId).update({
-                username: name,
                 email: email,
                 profile_picture : imageUrl,
             });
@@ -475,7 +490,24 @@
            var bioString = bio.value;
            firebase.database().ref('/users/' + userId).update({Bio: bioString});
            //firebase.database().ref('/users/' + userId + '/bio/').once('value', function(snapshot) {
-               document.getElementById("ubio").innerHTML = bioString;//snapshot.val().Bio;
+               document.getElementById("userbio").innerHTML = bioString;//snapshot.val().Bio;
+            //   console.log(snapshot.val());
+           //});
+       }
+        
+        function setUsername() {
+            var x = document.getElementById("usernametext");
+            var y = document.getElementById("submitnamebtn")
+            x.style.display = "none";
+            y.style.display = "none";
+            var cbtn = document.getElementById("changename");
+            cbtn.innerHTML = "Change"
+           //var userId = document.getElementById("uid").innerHTML;
+           var name = document.getElementById("usernametext");
+           var nameString = name.value;
+           firebase.database().ref('/users/' + userId).update({username: nameString});
+           //firebase.database().ref('/users/' + userId + '/bio/').once('value', function(snapshot) {
+               document.getElementById("username").innerHTML = "Username: " + nameString;
             //   console.log(snapshot.val());
            //});
        }
@@ -492,6 +524,22 @@
                 x.style.display = "none";
                 y.style.display = "none";
                 var cbtn = document.getElementById("changebio");
+                cbtn.innerHTML = "Change"
+              }
+            }
+        
+        function myName() {
+            var x = document.getElementById("usernametext");
+            var y = document.getElementById("submitnamebtn")
+              if (x.style.display === "none") {
+                x.style.display = "block";
+                y.style.display = "block";
+                var cbtn = document.getElementById("changename");
+                cbtn.innerHTML = "Hide Textbox"
+              } else {
+                x.style.display = "none";
+                y.style.display = "none";
+                var cbtn = document.getElementById("changename");
                 cbtn.innerHTML = "Change"
               }
             }
@@ -536,15 +584,17 @@
         
         <br>
         <button onclick="topFunction()" id="myBtn" class = "btn btn-info btn-lg"title="Go to top">Top</button>
-        <center><div id="datadiv">
-                <h1 id = "username"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="myFunction()">Change</button><br><br>
+        <center><div id="divchange">
+                <h1 id = "username"></h1><br><br><button class ="btn btn-info btn-lg" id ="changename" onclick="myName()">Change</button><br><br>
+                <textarea id="usernametext" type="text" name="thebio" cols="50" rows="4" placeholder="Enter a Bio" class="bluetext"></textarea><br>
+                    <button class ="btn btn-info btn-lg" onclick="setUsername()" id = "submitnamebtn">Submit</button>
                 </div>
             <br>
                 <div id="datadiv">
             <h1 id ="reidbio"></h1><button class ="btn btn-info btn-lg" id ="rbio" onclick="myFunction()">Change</button><h4 id="reidBio"></h4>
                 </div>
             <br>
-                <div id="divbio">
+                <div id="divchange">
                     <h2>Biography</h2><br>
                     <h4 id = "userbio"></h4><br><br><button class ="btn btn-info btn-lg" id ="changebio" onclick="myFunction()">Change</button><br><br>
                     <textarea id="biotext" type="text" name="thebio" cols="50" rows="4" placeholder="Enter a Bio" class="bluetext"></textarea><br>
