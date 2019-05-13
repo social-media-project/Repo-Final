@@ -482,7 +482,7 @@
            firebase.database().ref('/users/' + userId).update({profile_picture: imgValue});
            //firebase.database().ref('/users/' + userId + '/bio/').once('value', function(snapshot) {
             myphotodiv = document.getElementById("uimg");
-            myphotodiv.innerHTML = "<img src='" + imgValue + "' class ='avatar bigger'/>";
+            myphotodiv.innerHTML = "<img src='" + imgValue + "' class ='avatar big'/>";
            //});
        }
         
@@ -525,7 +525,7 @@
                 x.style.display = "block";
                 y.style.display = "block";
                 var cbtn = document.getElementById("changeimg");
-                cbtn.innerHTML = "Hide Textbox"
+                cbtn.innerHTML = "Hide"
               } else {
                 x.style.display = "none";
                 y.style.display = "none";
