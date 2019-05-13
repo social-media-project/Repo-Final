@@ -1,5 +1,6 @@
 
 
+
 <html>
 
     <script src="https://www.gstatic.com/firebasejs/5.7.3/firebase.js"></script>
@@ -254,6 +255,7 @@
           background-color:white; /* Add a background on hover */
           color:deepskyblue;
         }
+
     
     </style>
     
@@ -277,10 +279,14 @@
                 return;
             } else {
                 userId = user.uid;
-                name = user.displayName;
                 imageUrl = user.photoURL;
                 email = user.email;
-                console.log("here");
+                firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
+                name = snapshot.val().username;
+                console.log(name);
+                mydiv = document.getElementById("mydata");
+                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
+                });
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
                 console.log(snapshot.val());
                 bio = snapshot.val().Bio;
@@ -303,8 +309,6 @@
                 writeUserData(userId, name, email, imageUrl, bio); 
                 
                 // write data to document
-                mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
 
@@ -351,7 +355,6 @@
         // write user data
         function writeUserData(userId, name, email, imageUrl, bio) {
             firebase.database().ref('users/' + userId).update({
-                username: name,
                 email: email,
                 profile_picture : imageUrl,
             });
@@ -508,7 +511,7 @@
         <div class="topnav">
           <a href="https://social-media-project.github.io/Repo-Final/">Home</a>
           <a onclick="signin()">Sign In</a>
-          <a onclick="signout()">Sign Out</a>
+          <a href = "https://social-media-project.github.io/Repo-Final/bio.html" onclick="signout()">Sign Out</a>
           <a href="https://social-media-project.github.io/Repo-Final/bio.html">My Bio</a>
           <a href="https://social-media-project.github.io/Repo-Final/about.html">About</a>           
         </div>
