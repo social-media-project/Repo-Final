@@ -8,12 +8,6 @@
 
     <style>
         
-        .textbox{
-            display: none;
-        }
-        .blacktext{
-            color: black;
-        }
         .tab {
             align-self: center;
         }
@@ -40,9 +34,13 @@
             border-radius: 50%;
             border-color: whitesmoke;
         }
-        .big {
-            width: 50%;
+        .bigger{
+            width: 40%;
             height: 40%px;
+        }
+        .big {
+            width: 20%;
+            height: 20%px;
         }
         .small {
             width: 50px;
@@ -70,30 +68,23 @@
             color: white;
             font-family: Arial, Helvetica, sans-serif;
         }
-        .myid {
-            position: absolute;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-            width: 85%;
         }
         .modal-header{
             background-color: deepskyblue;
             color: white;
         }
-        .bluetext{
-            color: deepskyblue;
-        }
+ 
         .bio{
             background-color: deepskyblue;
             width: 22%;
             height: 55.5%;
             position: fixed;
             border-style: solid;
-            border-color: black;
             border-right-style: none;
             border-image-width: 5px;
             top: 12px;
-            padding: 6px;
+            padding-top: 6px;
+            border-radius: 0px;
         }
         
         .copybio{
@@ -118,6 +109,9 @@
           bottom: 20px; /* Place the button at the bottom of the page */
           right: 30px; /* Place the button 30px from the right */
           z-index: 99; /* Make sure it does not overlap */
+        }
+        #biotext{
+            display: none;
         }
 
         #myBtn:hover {
@@ -192,13 +186,12 @@
             background-color: deepskyblue;
             color: white;
         }
-        #biodiv{
+        #abouttable{
             border-style: solid;
             border-color: black;
             background-color: deepskyblue;
             color: white;
             width:50%;
-            padding: 5px;
         }
         #rbio:hover {
           background-color:white; /* Add a background on hover */
@@ -207,19 +200,63 @@
         #reidbio{
             padding: 2px;
         }
-        #biotext{
-            display: none;
+        
+        #biodiv{
+            color: white;
+        }
+        #editprofile{
+            text-decoration: none;
+            color: white;
+        }
+        #editprofile:hover {
+            text-decoration: none;
+            color: deepskyblue;
+        }
+        #profilelink:hover{
+          background-color:white; /* Add a background on hover */
+          color:deepskyblue;
+        }
+        #biodiv{
+            width: 95%;
+            height: 5%;
+        }
+        #profile{
+            bottom: 5px;
+        }
+         .myid {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            padding: 5px;
+            background-color: white;
+            color: deepskyblue;
+        }
+        #datadiv{
+            border-style: solid;
+            border-color: black;
+            background-color: deepskyblue;
+            color: white;
+            width:50%;
+            height: 33%;
+            padding: 5px;
         }
         #submitbiobtn{
             display: none;
         }
-        #ubio{
-            width: 95%;
+        #submitbiobtn:hover{
+            color: deepskyblue;
+            background-color: white;
         }
+        #changebio:hover{
+            color: deepskyblue;
+            background-color: white;
+        }
+
     
     </style>
     <script>
         
+        // Initialize Firebase
+                
      
         
         // Initialize Firebase
@@ -246,8 +283,19 @@
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
                 bio = snapshot.val().Bio;
                 console.log(bio);
-                usersbio = document.getElementById("ubio");
-                usersbio.innerHTML = bio;
+                u = bio.length;
+                console.log(u)
+                thebio = document.getElementById("userbio");
+                thebio.innerHTML = bio;
+                if (u < 100){
+                    usersbio = document.getElementById("ubio");
+                    usersbio.innerHTML = bio;
+                }
+                else{
+                    usersbio = document.getElementById("ubio");
+                    usersbio.innerHTML = "Visit My Bio To View Full Bio";
+                }
+
            });
                 
                 writeUserData(userId, name, email, imageUrl, bio); 
@@ -256,6 +304,8 @@
                 
                 
                 // write data to document
+                mydiv = document.getElementById("mydata");
+                mydiv.innerHTML = "<h1>" + name + "</h1><h4>(" + email + ")</h4>";
                 mydiv = document.getElementById("mydata");
                 mydiv.innerHTML = "<h1>" + name + "</h1><br><h4>" + email + "</h4>";
                 biohead = document.getElementById("bioheader");
@@ -266,7 +316,9 @@
                 userimg.innerHTML = "Profile Photo: <img src='" + imageUrl + "' class ='avatar big'/>";
                 username.innerHTML = "Username: " + name;
                 myphotodiv = document.getElementById("myphoto");
-                myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
+                myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar bigger'/>";
+                
+                
 
                 firebase.database().ref('/tweets').once('value').then(function(snapshot) {
                     var data = (snapshot.val());
@@ -306,31 +358,54 @@
                 }
                 fileReader.readAsDataURL(fileToLoad);
             }
-        } // end function
+        }
         
+        function tweet() {
+            
+            var twitdoc = document.getElementById("twit");
+            var twitimg = document.getElementById("imgTest");
+            var nameValue = twitdoc.value;
+            var imgValue = twitimg.innerHTML;
+            var js_time = Date.now();
+            
+            if (nameValue==""){
+                alert("No Message");
+            }
+            else if (nameValue.indexOf("fuck")>=0){
+                alert("No Swearing");
+            }
+            else if (nameValue.indexOf("bitch")>=0){
+                alert("No Swearing");
+            }
+            else if (nameValue.indexOf("shit")>=0){
+                alert("No Swearing");
+            }
+            else if (nameValue.indexOf("ben")>=0 && nameValue.indexOf("best")>=0 && nameValue.indexOf("not")<0){
+                alert("No false statments");
+            }
+            else{
+                var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue});
+            twitdoc.value = "";
+            console.log("tweet written")
+            
+            firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                    if (data == null) {
+                      console.log("No data found at /tweets/" + userId);  
+                    } else { 
+                        firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                        var userdata = (snapshot.val());
+                        if (userdata != null) {
+                           dataarray = [data,userdata]
+                           console.log(dataarray)
+                           updatetweets(dataarray); 
+                        }
+                      });
+                    }
+                });
+            }
+        }
         
-        function setbioData() {
-            var x = document.getElementById("biotext");
-            var y = document.getElementById("submitbiobtn")
-            x.style.display = "none";
-            y.style.display = "none";
-            var cbtn = document.getElementById("changebio");
-            cbtn.innerHTML = "Change"
-           //var userId = document.getElementById("uid").innerHTML;
-           var bio = document.getElementById("biotext");
-           var bioString = bio.value;
-           firebase.database().ref('/users/' + userId).update({Bio: bioString});
-           //firebase.database().ref('/users/' + userId + '/bio/').once('value', function(snapshot) {
-               document.getElementById("ubio").innerHTML = bioString;//snapshot.val().Bio;
-            //   console.log(snapshot.val());
-           //});
-       }
-        
-
-        
-    
-        
-        // write user data
         function writeUserData(userId, name, email, imageUrl, bio) {
             firebase.database().ref('users/' + userId).update({
                 username: name,
@@ -338,7 +413,6 @@
                 profile_picture : imageUrl,
             });
         }
-        
         
         function signin() {
             console.log("Signing in");
@@ -359,23 +433,44 @@
             function scrollFunction() {
               if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
                 document.getElementById("myBtn").style.display = "block";
-              } else {
+              } 
+                else {
                 document.getElementById("myBtn").style.display = "none";
               }
-              if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
+              if (document.body.scrollTop > 2 || document.documentElement.scrollTop > 2){
                   document.getElementById("bio").style.borderRightStyle = "solid";
+                  document.getElementById("bio").style.borderRadius = "15px";
               }
                 else {
                 document.getElementById("bio").style.borderRightStyle = "none";
+                document.getElementById("bio").style.borderRadius = "0px";
+                }
             }
-            }
+
 
             // When the user clicks on the button, scroll to the top of the document
             function topFunction() {
               document.body.scrollTop = 0; // For Safari
               document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
             }
-    
+        
+        function setbioData() {
+            var x = document.getElementById("biotext");
+            var y = document.getElementById("submitbiobtn")
+            x.style.display = "none";
+            y.style.display = "none";
+            var cbtn = document.getElementById("changebio");
+            cbtn.innerHTML = "Change"
+           //var userId = document.getElementById("uid").innerHTML;
+           var bio = document.getElementById("biotext");
+           var bioString = bio.value;
+           firebase.database().ref('/users/' + userId).update({Bio: bioString});
+           //firebase.database().ref('/users/' + userId + '/bio/').once('value', function(snapshot) {
+               document.getElementById("ubio").innerHTML = bioString;//snapshot.val().Bio;
+            //   console.log(snapshot.val());
+           //});
+       }
+        
         function myFunction() {
             var x = document.getElementById("biotext");
             var y = document.getElementById("submitbiobtn")
@@ -391,6 +486,8 @@
                 cbtn.innerHTML = "Change"
               }
             }
+
+
 
 
     
@@ -417,27 +514,30 @@
           <a onclick="signin()">Sign In</a>
           <a onclick="signout()">Sign Out</a>
           <a href="https://social-media-project.github.io/Repo-Final/bio.html">My Bio</a>
-          <a href="https://social-media-project.github.io/Repo-Final/about.html">About</a>            
+          <a href="https://social-media-project.github.io/Repo-Final/about.html">About</a>           
         </div>
         <br><br>
         <div id="bio" class="bio">
-            <div id="myphoto"></div><br>
-            <div id="mydata" class="myid"></div>
+            <center><div id="myphoto"></div></center><br>
+            <center><div id="mydata" class="myid"></div></center>
+            <center><div id ="biodiv"><h6 id ="ubio"></h6></div><br>
+            <div id ="profile"><button class="btn btn-info btn-lg"  id="profilelink"><a href="https://social-media-project.github.io/Repo-Final/bio.html" id="editprofile">Edit Profile</a></button></div>
+            </center>
         </div>
         
         <br>
         <button onclick="topFunction()" id="myBtn" class = "btn btn-info btn-lg"title="Go to top">Top</button>
-        <center><div id="biodiv">
-                <h1 id = "username"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="textshow()">Change</button><br><br>
+        <center><div id="datadiv">
+                <h1 id = "username"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="myFunction()">Change</button><br><br>
                 </div>
             <br>
-                <div id="biodiv">
-            <h1 id ="reidbio"></h1><br><br><button class ="btn btn-info btn-lg" id ="rbio" onclick="textshow()">Change</button><h4 id="reidBio"></h4>
+                <div id="datadiv">
+            <h1 id ="reidbio"></h1><button class ="btn btn-info btn-lg" id ="rbio" onclick="myFunction()">Change</button><h4 id="reidBio"></h4>
                 </div>
             <br>
-                <div id="biodiv">
+                <div id="datadiv">
                     <h2>Biography</h2><br>
-                    <h4 id = "ubio"></h4><br><br><button class ="btn btn-info btn-lg" id ="changebio" onclick="myFunction()">Change</button><br><br>
+                    <h4 id = "userbio"></h4><br><br><button class ="btn btn-info btn-lg" id ="changebio" onclick="myFunction()">Change</button><br><br>
                     <textarea id="biotext" type="text" name="thebio" cols="50" rows="4" placeholder="Enter a Bio" class="bluetext"></textarea><br>
                     <button class ="btn btn-info btn-lg" onclick="setbioData()" id = "submitbiobtn">Submit</button>
                 </div>
@@ -445,6 +545,7 @@
             
             
                 </center>
+            
         
         <br>
         
