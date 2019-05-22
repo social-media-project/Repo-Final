@@ -255,6 +255,37 @@
           background-color:white; /* Add a background on hover */
           color:deepskyblue;
         }
+        .fa {
+            font-size: 300px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .like:hover {
+            color: green;
+        }
+        .dislike:hover {
+            color: red;
+        }
+        #dislikecount{
+            color: white;
+            display: none;
+        }
+        .space{
+            background-color: white;
+            padding: 10px;
+        }
+        .lefthead{
+            border-top-left-radius: 10px;
+        }
+        .righthead{
+            border-top-right-radius: 10px;
+        }
+        .foot{
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
 
     
     </style>
@@ -281,8 +312,7 @@
                 userId = user.uid;
                 email = user.email;
                 firebase.database().ref('/users/' + userId ).once('value', function(snapshot) {
-                    imageUrl = snapshot.val().profile_picture;
-                    console.log(imageUrl); 
+                    imageUrl = snapshot.val().profile_picture; 
                     myphotodiv = document.getElementById("myphoto");
                     myphotodiv.innerHTML = "<img src='" + imageUrl + "' class ='avatar big'/>";
                 });
@@ -301,7 +331,6 @@
                     if (u < 100){
                         usersbio = document.getElementById("thebio");
                         usersbio.innerHTML = bio;
-                        console.log("it's here");
                     }
                     else{
                         usersbio = document.getElementById("thebio");
@@ -360,8 +389,20 @@
         function writeUserData(email) {
             firebase.database().ref('users/' + userId).update({
                 email: email,
+                userId: userId
             });
         }
+         
+         //function likedcheck(tweetowner){
+             //firebase.database().ref('/users/' + userId + '/Usersliked/' + tweetowner).once('value').then(function(snapshot) { 
+             //var liked = snapshot.val().Count;
+             //if (liked == count) {
+                 //var i = document.getElementById("unlike" + count);
+                 //i.src = "full.png";
+                 //i.style.width = '5%';
+             //}
+           //});   
+         //}
         
         function updatetweets(data) {
             
@@ -370,23 +411,30 @@
             users = data[1]; // put on top, because changed data - not good coding change later
             data = data[0];
             
+            count=0
             for (var u in data) {
                 for (var t in data[u]) {
                     mytab = mytab + "<tr>";
                     var date = new Date(data[u][t].time);
                     var time = date.toString();
                     if (data[u][t].img != "") {
-                        mytab = mytab + "<td class ='tab content bottombar'><img src='" + users[u].profile_picture + "' width='50px' class ='avatar small'></td>";
-                        mytab = mytab + "<td class ='tab content bottombar'><b>" + data[u][t].tweet + "</b><br>"+ time + "</td>";
+                        mytab = mytab + "<td class ='tab content bottombar lefthead '><img src='" + users[u].profile_picture + "' width='50px' class ='avatar small'></td>";
+                        mytab = mytab + "<td class ='tab content bottombar righthead'><b>" + data[u][t].tweet + "</b><br>"+ time + "</td>";
                         mytab = mytab + "<tr>";
-                        mytab = mytab + "<td colspan='2' class ='tab content'><center>" + "<img src='" + data[u][t].img + "' width='300px'></center></td>";
+                        mytab = mytab + "<td colspan='2' class ='tab content bottombar'><center>" + "<img src='" + data[u][t].img + "' width='300px'></center></td>";
+                        mytab = mytab + "<tr>";
+                        mytab = mytab +"<td colspan='2' class ='tab content foot'><center>" + "<img src ='heart.png' width = '7%' onclick= setDislike(" + count + ",'" + t + "'," + data[u][t].dislikes + ",'" + users[u].userId + "') id ='unlike" + count + "'></i>" + "<h4 id='dislikecount" + count + "'>"+ data[u][t].dislikes + "</h4>" +  "</td></tr>";
                         mytab = mytab + "<tr>";
                         mytab = mytab + "<td class ='tab space'>-</td>";
+                        count = count + 1;
                     } else {
-                        mytab = mytab + "<td class ='tab content bottombar'><img src='" + users[u].profile_picture + "' width='50px' class ='avatar small'></td>";
-                        mytab = mytab + "<td class ='tab content bottombar'><b>" + data[u][t].tweet + "</b><br>"+ time + "</td>";
+                        mytab = mytab + "<td class ='tab content bottombar lefthead'><img src='" + users[u].profile_picture + "' width='50px' class ='avatar small'></td>";
+                        mytab = mytab + "<td class ='tab content bottombar righthead'><b>" + data[u][t].tweet + "</b><br>"+ time + "</td>";
+                        mytab = mytab + "<tr>";
+                        mytab = mytab +"<td colspan='2' class ='tab content foot'><center>" + "<img src ='heart.png' width = '7%' onclick= setDislike(" + count + ",'" + t + "'," + data[u][t].dislikes + ",'" + users[u].userId + "') id ='unlike" + count + "'></i>" + "<h4 id='dislikecount" + count + "'>"+ data[u][t].dislikes + "</h4>" +  "</td></tr>";
                         mytab = mytab + "<tr>";
                         mytab = mytab + "<td class ='tab space'>-</td>";
+                        count = count + 1;
                         
                     } 
                     mytab = mytab + "</tr>";
@@ -398,6 +446,21 @@
             //mytdiv.innerHTML = mylist;
             mytdiv.innerHTML = mytab;
         }
+         
+             
+         
+         function setDislike(count, t, dislikes, tweetowner){
+             console.log(tweetowner);
+             var z = document.getElementById("dislikecount" + count);
+             var i = document.getElementById("unlike" + count);
+             z.style.display = "block";
+             i.src = "full.png";
+             i.style.width = '5%';
+             newcount = dislikes + 1;
+             z.innerHTML = newcount;
+             firebase.database().ref('/tweets/' + tweetowner + "/" + t).update({dislikes: newcount});
+              
+            }  
         
         
         // write tweets to firebase
@@ -408,6 +471,7 @@
             var nameValue = twitdoc.value;
             var imgValue = twitimg.innerHTML;
             var js_time = Date.now();
+            var dislikes = 0;
             
             if (nameValue==""){
                 alert("No Message");
@@ -425,7 +489,7 @@
                 alert("No false statments");
             }
             else{
-                var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue});
+                var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue, dislikes: dislikes});
             twitdoc.value = "";
             console.log("tweet written")
             
@@ -501,6 +565,7 @@
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
           <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
           <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         </head>
         
         <div class="hero-image">
