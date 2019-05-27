@@ -243,6 +243,16 @@
         }
          
         function writebio() {
+            var name = document.getElementById("username");
+            var nameString = name.value;
+            var bio = document.getElementById("bio");
+            var bioString = bio.value;
+            var twitimg = document.getElementById("imgTest");
+            var imgValue = twitimg.innerHTML;
+            if (nameString == "" || bioString == "" || imgValue == ""){
+                alert("Please enter a Username, Profile Photo and a Bio to Continue");
+            }
+            else{
             firebase.database().ref('/current-signin/').update({
                 status: 2
             });
@@ -254,18 +264,13 @@
             y.style.display = "none";
             z.style.display = "block";
             a.style.display = "none";
-            var name = document.getElementById("username");
-            var nameString = name.value;
-            var bio = document.getElementById("bio");
-            var bioString = bio.value;
-            var twitimg = document.getElementById("imgTest");
-            var imgValue = twitimg.innerHTML;
             firebase.database().ref('/users/' + userId).update({
                 username: nameString,
                 Bio: bioString,
                 profile_picture: imgValue
                 });
             }
+        }
 
     
     </script>      
